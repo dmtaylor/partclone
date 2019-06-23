@@ -69,14 +69,14 @@ for fs in $test_fs; do
     ptlfs=$(_ptlname $fs)
     mkfs=$(_findmkfs $fs)
     if [ $file_size -ne 0 -a $block_size -ne 0 ]; then
-	dd_count=$(($file_size / $block_size))
-	dd_bs=$block_size
+        dd_count=$(($file_size / $block_size))
+        dd_bs=$block_size
     elif [ $block_size -ne 0 ]; then
-	dd_bs=$block_size
+        dd_bs=$block_size
     elif [ $file_size -ne 0 ]; then
-	dd_count=$(($file_size / $dd_bs))
+        dd_count=$(($file_size / $dd_bs))
     else
-	dd_count=$(_test_size $fs)
+        dd_count=$(_test_size $fs)
     fi
     echo -e "\ncreate raw file $raw\n"
     _ptlbreak

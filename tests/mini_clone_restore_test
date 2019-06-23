@@ -73,6 +73,7 @@ for fs in $test_fs; do
         dd_bs=$block_size
     elif [ $block_size -ne 0 ]; then
         dd_bs=$block_size
+        dd_count=$(_test_size $fs)
     elif [ $file_size -ne 0 ]; then
         dd_count=$(($file_size / $dd_bs))
     else

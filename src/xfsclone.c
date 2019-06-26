@@ -42,34 +42,34 @@ void *thread_update_bitmap_pui(void *arg);
 
 void get_sb(xfs_sb_t *sbp, xfs_off_t off, int size, xfs_agnumber_t agno)
 {
-        xfs_dsb_t *buf = NULL;
+    xfs_dsb_t *buf = NULL;
 	int rval = 0;
 
-        buf = memalign(libxfs_device_alignment(), size);
-        if (buf == NULL) {
-                log_mesg(0, 1, 1, fs_opt.debug, "%s: error reading superblock %u -- failed to memalign buffer\n", __FILE__, agno);
-        }
-        memset(buf, 0, size);
-        memset(sbp, 0, sizeof(*sbp));
+    buf = memalign(libxfs_device_alignment(), size);
+    if (buf == NULL) {
+        log_mesg(0, 1, 1, fs_opt.debug, "%s: error reading superblock %u -- failed to memalign buffer\n", __FILE__, agno);
+    }
+    memset(buf, 0, size);
+    memset(sbp, 0, sizeof(*sbp));
 
-        /* try and read it first */
+    /* try and read it first */
 
-        if (lseek64(source_fd, off, SEEK_SET) != off)  {
-                free(buf); buf = NULL;
-                log_mesg(0, 1, 1, fs_opt.debug, "%s: error reading superblock %u -- seek to offset %" PRId64 " failed\n", __FILE__, agno, off);
-        }
+    if (lseek64(source_fd, off, SEEK_SET) != off)  {
+        free(buf); buf = NULL;
+        log_mesg(0, 1, 1, fs_opt.debug, "%s: error reading superblock %u -- seek to offset %" PRId64 " failed\n", __FILE__, agno, off);
+    }
 
-        if (buf && (rval = read(source_fd, buf, size)) != size)  {
-                free(buf); buf = NULL;
-                log_mesg(0, 1, 1, fs_opt.debug, "%s: superblock read failed, offset %" PRId64 ", size %d, ag %u, rval %d\n", __FILE__, off, size, agno, rval);
-        }
-        if (buf) {
-            libxfs_sb_from_disk(sbp, buf);
+    if (buf && (rval = read(source_fd, buf, size)) != size)  {
+        free(buf); buf = NULL;
+        log_mesg(0, 1, 1, fs_opt.debug, "%s: superblock read failed, offset %" PRId64 ", size %d, ag %u, rval %d\n", __FILE__, off, size, agno, rval);
+    }
+    if (buf) {
+        libxfs_sb_from_disk(sbp, buf);
 
-            //rval = verify_sb((char *)buf, sbp, agno == 0);
-            free(buf); buf = NULL;
-            //return rval;
-        }
+        //rval = verify_sb((char *)buf, sbp, agno == 0);
+        free(buf); buf = NULL;
+        //return rval;
+    }
 }
 
 

@@ -15,6 +15,7 @@
 #include <stdio.h>
 #include <unistd.h>
 #include <pthread.h>
+#include <errno.h>
 #include "xfs/libxfs.h"
 #include "partclone.h"
 #include "xfsclone.h"
@@ -44,11 +45,18 @@ void get_sb(xfs_sb_t *sbp, xfs_off_t off, int size, xfs_agnumber_t agno)
 {
     xfs_dsb_t *buf = NULL;
 	int rval = 0;
+    int alloc_res = 0;
 
-    buf = memalign(libxfs_device_alignment(), size);
-    if (buf == NULL) {
-        log_mesg(0, 1, 1, fs_opt.debug, "%s: error reading superblock %u -- failed to memalign buffer\n", __FILE__, agno);
+    alloc_res = posix_memalign((void **) &buf, libxfs_device_alignment(), size);
+    if(alloc_res == EINVAL){
+        log_mesg(0, 1, 1, fs_opt.debug, "%s: error reading superblock %u -- failed to memalign buffer: invalid alignment of %u\n",
+                __FILE__, agno, libxfs_device_alignment());
     }
+    else if(alloc_res == ENOMEM){
+        log_mesg(0, 1, 1, fs_opt.debug, "%s: error reading superblock %u -- failed to memalign buffer: out of memory\n", __FILE__,
+                agno);
+    }
+
     memset(buf, 0, size);
     memset(sbp, 0, sizeof(*sbp));
 
